@@ -1,0 +1,6 @@
+flask
+json
+BeautifulSoup
+urlparse
+requests
+time
