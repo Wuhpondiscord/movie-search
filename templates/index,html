@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Search</title>
+    <link rel="icon" type="image/png" href="imageurlhere">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            position: relative; 
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: calc(100% - 22px); 
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; 
+            background-color: #fff; 
+            transition: background-color 0.3s ease; 
+        }
+        
+        input[type="text"]:hover,
+        input[type="number"]:hover {
+            background-color: #f2f2f2; 
+        }
+        
+        input[type="submit"] {
+            width: calc(100% - 22px); 
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; 
+            background-color: #007bff; 
+            color: #fff; 
+            cursor: pointer;
+            transition: background-color 0.3s ease; 
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3; 
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; 
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            margin-bottom: 10px; 
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        #contacts {
+            margin-top: 20px; 
+        }
+        #contacts-list {
+            padding: 0;
+        }
+        #contacts-list li {
+            margin-bottom: 10px; 
+        }
+        #contacts-list li a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold; 
+        }
+        .contact-message {
+            font-size: 12px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .logo {
+            position: absolute;
+            top: -15px;
+            left: -10px;
+            width: 100px; 
+            height: auto; 
+        }
+
+        @media only screen and (max-width: 600px) {
+            input[type="submit"] {
+                padding: 15px; 
+                font-size: 16px; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <img src="imageurlhere" alt="Logo" class="logo">
+
+    <div class="container">
+        <h1>Movie Search</h1>
+        <div id="search-form">
+            <h2>Search</h2>
+            <form id="movie-search-form">
+                <label for="movie_name">Movie Name:</label>
+                
+                <input type="text" id="movie_name" name="movie_name" required class="search-box"><br>
+                <label for="length">Movie Length (in minutes):</label>
+                <input type="number" id="length" name="length" required><br>
+                <label for="virustotal_api_key">VirusTotal API Key:</label>
+                <input type="text" id="virustotal_api_key" name="virustotal_api_key"><br>
+                <label for="max_results">Max Results:</label>
+                <input type="number" id="max_results" name="max_results" value="10" min="1"><br>
+                <label for="search_category">Search Category:</label>
+                <select id="search_category" name="search_category">
+                    <option value="Trailer">Trailer</option>
+                    <option value="File Types">File Types</option>
+                    <option value="Resolution">Resolution</option>
+                    <option value="Aspect Ratio">Aspect Ratio</option>
+                </select><br>
+                <label for="search_subcategory">Search Subcategory:</label>
+                <select id="search_subcategory" name="search_subcategory">
+                </select><br>
+                <input type="submit" value="Search">
+            </form>
+        </div>
+
+        <div id="loading-message" style="display: none;">
+            <h2>Please wait...</h2>
+        </div>
+
+        <div class="contact-message">
+            <small>To get a domain blacklisted so it no longer shows in search results, contact on Discord.</small>
+        </div>
+
+        <div id="search-results" style="display: none;">
+            <h2>Search Results</h2>
+            <ul id="results-list"></ul>
+        </div>
+
+        <div id="contacts">
+            <h2>Contacts</h2>
+            <ul id="contacts-list">
+                {% for contact in contacts %}
+                <li><a href="{{ contact.url }}" target="_blank">{{ contact.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('movie-search-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var loadingMessage = document.getElementById('loading-message');
+            loadingMessage.style.display = 'block'; 
+            var formData = new FormData(this);
+            var apiKey = formData.get('virustotal_api_key');
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    loadingMessage.style.display = 'none'; 
+                    var data = JSON.parse(xhr.responseText);
+                    var scanResults = data.scan_results;
+                    var positiveCount = data.positive_count;
+                    var resultsList = document.getElementById('results-list');
+                    resultsList.innerHTML = '';  
+                    if (apiKey !== '') {
+                        scanResults.forEach(function(result) {
+                            var li = document.createElement('li');
+                            li.textContent = "Scan Result: " + result.scan_result + ", URL: " + result.url;
+                            resultsList.appendChild(li);
+                        });
+                        var li = document.createElement('li');
+                        li.textContent = "Positive Count: " + positiveCount;
+                        resultsList.appendChild(li);
+                    } else {
+                        scanResults.forEach(function(result) {
+                            var li = document.createElement('li');
+                            li.textContent = result.url;
+                            resultsList.appendChild(li);
+                        });
+                    }
+                    document.getElementById('search-results').style.display = 'block';
+                }
+            };
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.send(new URLSearchParams(formData).toString());
+        });
+
+        document.getElementById('search_category').addEventListener('change', function() {
+            var category = this.value;
+            var subcategories = getSubcategories(category);
+            populateSubcategories(subcategories);
+        });
+
+        function getSubcategories(category) {
+            var subcategories = [];
+            switch (category) {
+                case "Trailer":
+                    subcategories.push("trailer");
+                    break;
+                case "File Types":
+                    subcategories.push("MKV", "MOV", "AVI", "MP4");
+                    break;
+                case "Resolution":
+                    subcategories.push("720p", "1080p", "2160p", "4K");
+                    break;
+                case "Aspect Ratio":
+                    subcategories.push("4:3", "standard definition", "16:9 HD", "high definition");
+                    break;
+                default:
+                    break;
+            }
+            return subcategories;
+        }
+
+        function populateSubcategories(subcategories) {
+            var select = document.getElementById('search_subcategory');
+            select.innerHTML = '';
+            subcategories.forEach(function(subcategory) {
+                var option = document.createElement('option');
+                option.value = subcategory;
+                option.textContent = subcategory;
+                select.appendChild(option);
+            });
+        }
+    </script>
+</body>
+</html>
