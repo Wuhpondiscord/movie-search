@@ -19,9 +19,9 @@ This is a Flask web application for searching movie-related content using Google
 
 - Clone the repository:
 
-git clone https://github.com/your_username/your_repository.git
+git clone https://github.com/Wuhpondiscord/movie-search.git
 
-diff
+
 
 
 - Install dependencies:
