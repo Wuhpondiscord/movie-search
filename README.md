@@ -1,63 +1,90 @@
 # Google Dork Movie Search
 
-Simple overview of use/purpose.
+Google Dork Movie Search is a Flask web application designed to simplify the process of searching for movie-related content using Google dorks. It provides users with a straightforward interface to input movie details and search criteria, fetching relevant search results from Google. Additionally, it integrates a security feature powered by the VirusTotal API to scan retrieved URLs for potential threats, ensuring a safer browsing experience.
 
-## Description
+## Features
 
-This is a Flask web application for searching movie-related content using Google dorks. It provides a user interface to input movie details and search criteria, then retrieves relevant search results from Google. Additionally, it offers a feature to scan the retrieved URLs for potential security threats using the VirusTotal API.
+- **User-friendly Interface:** Enjoy a clean and intuitive interface for inputting movie details and search criteria.
+  
+- **Google Dork Integration:** Leverage Google dorks to refine search results and find movie-related content efficiently.
+
+- **VirusTotal Integration:** Ensure browsing safety by scanning retrieved URLs for potential security threats using the VirusTotal API.
 
 ## Getting Started
 
-### Dependencies
+### Prerequisites
+
+To run Google Dork Movie Search, you need the following dependencies:
 
 - Python 3.x
 - Flask
 - BeautifulSoup
 - requests
 
-### Installing
+### Installation
 
-- Clone the repository:
+1. Clone the repository:
 
-git clone https://github.com/Wuhpondiscord/movie-search.git
+    ```bash
+    git clone https://github.com/Wuhpondiscord/movie-search.git
+    ```
 
+2. Install dependencies:
 
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-- Install dependencies:
+## Usage
 
-pip install -r requirements.txt
+To use the application locally, follow these steps:
 
+1. Navigate to the project directory:
 
+    ```bash
+    cd movie-search
+    ```
 
-### Executing program
+2. Run the application:
 
-- Run the application:
+    ```bash
+    python app.py
+    ```
 
-python app.py
+## Deployment on Replit
 
+To deploy the application on Replit, follow these steps:
 
+1. Visit [Replit](https://replit.com/) and create or log in to your account.
 
-- Access the application:
+2. Create a new Python REPL.
 
-Open your web browser and navigate to `http://localhost:5000` to access the application.
+3. Copy the contents of `main.py` into the `main.py` file in your Replit project.
 
-## Help
+4. Create a folder named `templates` and add `index.html` to it.
 
-If you encounter any issues or have questions, feel free to reach out to the project contributors.
+5. Upload `config.json` and `blacklisted_domains.txt` to the root directory of your Replit project.
 
-## Looking for Contributors
+6. Your project files should look something like this:
 
-We welcome contributions to enhance this project! Whether it's adding new features, fixing bugs, or improving documentation, your contributions are appreciated.
+    ![Project Files](images/project_files.png)
 
-## Authors
+7. Open the `index.html` file in the `templates` folder and change the URL for the favicon image in line 7 and the logo image in line 120 from "imageurlhere" to your desired URLs.
 
-- [wuhp](https://github.com/wuhpondiscord)
+8. Open the networking section in the top right corner:
 
-## Version History
+    ![Networking Section](images/networking_section.png)
 
-- 0.1
-- Initial Release
+9. Set the external port to `80`.
 
-## Adding Logo and Favicon
+10. Press the "run" button.
 
-To add a logo and favicon, replace `"imageurlhere"` in line 7 with the URL of your logo image and in line 120 with the URL of your favicon image.
+11. Retrieve the URL to the site from the networking section.
+
+## Customization
+
+- **Replit Theme:** If you prefer the Replit theme showcased in the images, you can download it [here](https://replit.com/theme/@wuhpondiscord/wuhp).
+
+## Contribution
+
+Contributions are welcome! Please feel free to submit pull requests or open issues for feature requests, bug fixes, or general improvements.
