@@ -20,12 +20,8 @@ def load_blacklist(filename):
 
 def is_blacklisted(domain, blacklist):
     for blacklisted_domain in blacklist:
-        if domain == blacklisted_domain:
+        if domain == blacklisted_domain or (blacklisted_domain.startswith("*.") and blacklisted_domain[2:] in domain):
             return True
-        if blacklisted_domain.startswith("*."):
-            subdomain_to_check = blacklisted_domain[2:]  
-            if subdomain_to_check in domain:
-                return True
     return False
 
 def add_to_blacklist(domain, filename):
@@ -38,11 +34,11 @@ def virustotal_scan(url, api_key):
         response = requests.post('https://www.virustotal.com/vtapi/v2/url/scan', data=params)
         response.raise_for_status()
         response_json = response.json()
-        if response_json['response_code'] == 1:
+        if response_json.get('response_code') == 1:
             print("URL successfully submitted for scanning.")
             return response_json['scan_id']
         else:
-            print("Failed to submit URL for scanning. Error message:", response_json['verbose_msg'])
+            print("Failed to submit URL for scanning. Error message:", response_json.get('verbose_msg'))
             return None
     except requests.exceptions.RequestException as e:
         print(f"Error occurred while scanning URL {url}: {e}")
@@ -54,18 +50,18 @@ def virustotal_report(scan_id, api_key):
         response = requests.get('https://www.virustotal.com/vtapi/v2/url/report', params=params)
         response.raise_for_status()  
         response_json = response.json()
-        if response_json['response_code'] == 1:
+        if response_json.get('response_code') == 1:
             print("Scan report retrieved successfully.")
-            print("URL to the full report:", response_json['permalink'])
+            print("URL to the full report:", response_json.get('permalink'))
             print("Scan results:")
             positive_count = 0
-            for scanner, result in response_json['scans'].items():
-                if result['detected']:
+            for scanner, result in response_json.get('scans', {}).items():
+                if result.get('detected'):
                     positive_count += 1
-                    print(f"{scanner}: Detected - {result['result']}")
+                    print(f"{scanner}: Detected - {result.get('result')}")
             return response_json, positive_count
         else:
-            print("Failed to retrieve scan report. Error message:", response_json['verbose_msg'])
+            print("Failed to retrieve scan report. Error message:", response_json.get('verbose_msg'))
             return None, 0
     except requests.exceptions.RequestException as e:
         print(f"Error occurred while getting report for scan ID {scan_id}: {e}")
@@ -95,10 +91,7 @@ def google_dork(movie_name, length, search_category, search_subcategory, max_res
         }
     }
 
-    if search_category not in dorks:
-        return [], 0
-
-    dork = dorks[search_category].get(search_subcategory)
+    dork = dorks.get(search_category, {}).get(search_subcategory)
     if not dork:
         return [], 0
 
@@ -137,9 +130,8 @@ def search(keyword, max_results, blacklist):
             url = result['href']
             if url.startswith('http') or url.startswith('www'):  
                 domain = urlparse(url).netloc.split(':')[0] if urlparse(url).netloc else ""  
-                if domain and is_blacklisted(domain, blacklist):  
-                    continue
-                processed_urls.add(url)
+                if domain and not is_blacklisted(domain, blacklist):  
+                    processed_urls.add(url)
         found_videos = list(processed_urls)[:max_results]
 
         print("Found videos:", found_videos)
@@ -169,7 +161,7 @@ def index():
         print("Scan Results:", scan_results)
         return jsonify(scan_results=scan_results, positive_count=positive_count)  
 
-    contacts = load_contacts("config.json")
+    contacts = load_contacts("contacts.json")
     return render_template('index.html', contacts=contacts)
 
 def load_contacts(filename):
@@ -182,7 +174,7 @@ def load_contacts(filename):
         return []
 
 @app.route('/add-to-blacklist', methods=['POST'])
-def add_to_blacklist():
+def add_to_blacklist_endpoint():
     data = request.get_json()
     domain = data.get('domain')
     print("Received domain:", domain)  
