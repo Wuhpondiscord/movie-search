@@ -2,6 +2,8 @@
 
 Google Dork Movie Search is a Flask web application designed to simplify the process of searching for movie-related content using Google dorks. It provides users with a straightforward interface to input movie details and search criteria, fetching relevant search results from Google. Additionally, it integrates a security feature powered by the VirusTotal API to scan retrieved URLs for potential threats, ensuring a safer browsing experience.
 
+## If You like it please give it a star ⭐
+
 ## Features
 
 - **User-friendly Interface:** Enjoy a clean and intuitive interface for inputting movie details and search criteria.
