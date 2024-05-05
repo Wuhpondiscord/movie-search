@@ -40,12 +40,12 @@
             background-color: #fff; 
             transition: background-color 0.3s ease; 
         }
-        
+
         input[type="text"]:hover,
         input[type="number"]:hover {
             background-color: #f2f2f2; 
         }
-        
+
         input[type="submit"] {
             width: calc(100% - 22px); 
             padding: 10px;
@@ -125,7 +125,6 @@
             <h2>Search</h2>
             <form id="movie-search-form">
                 <label for="movie_name">Movie Name:</label>
-                
                 <input type="text" id="movie_name" name="movie_name" required class="search-box"><br>
                 <label for="length">Movie Length (in minutes):</label>
                 <input type="number" id="length" name="length" required><br>
@@ -152,12 +151,21 @@
         </div>
 
         <div class="contact-message">
-            <small>To get a domain blacklisted so it no longer shows in search results, contact on Discord.</small>
+            <small>If you have any issues please contact on discord. looking for sontributors</small>
         </div>
 
         <div id="search-results" style="display: none;">
             <h2>Search Results</h2>
             <ul id="results-list"></ul>
+        </div>
+
+        <div id="blacklist-form">
+            <h2>Blacklist Domain</h2>
+            <form id="blacklist-domain-form">
+                <label for="blacklist_domain">Domain to Blacklist:</label>
+                <input type="text" id="blacklist_domain" name="blacklist_domain" required><br>
+                <input type="submit" value="Add to Blacklist">
+            </form>
         </div>
 
         <div id="contacts">
@@ -247,6 +255,36 @@
                 select.appendChild(option);
             });
         }
+
+        // Function to add event listener for blacklist domain form submission
+        document.getElementById('blacklist-domain-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var domain = document.getElementById('blacklist_domain').value;
+            if (domain.trim() !== '') {
+                var data = { domain: domain };
+                fetch('/add-to-blacklist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Domain added to blacklist successfully.');
+                        document.getElementById('blacklist_domain').value = '';  
+                    } else {
+                        throw new Error('Failed to add domain to blacklist.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to add domain to blacklist. Please try again.');
+                });
+            } else {
+                alert('Please enter a valid domain.');
+            }
+        });
     </script>
 </body>
 </html>
