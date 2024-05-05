@@ -256,7 +256,7 @@
             });
         }
 
-        // Function to add event listener for blacklist domain form submission
+
         document.getElementById('blacklist-domain-form').addEventListener('submit', function(event) {
             event.preventDefault();
             var domain = document.getElementById('blacklist_domain').value;
