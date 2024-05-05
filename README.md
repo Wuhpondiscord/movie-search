@@ -28,15 +28,13 @@ git clone https://github.com/Wuhpondiscord/movie-search.git
 
 pip install -r requirements.txt
 
-markdown
-Copy code
+
 ### Executing program
 
 - Run the application:
 
 python app.py
 
-markdown
 
 
 - Access the application:
